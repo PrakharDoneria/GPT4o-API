@@ -1,3 +1,4 @@
 Flask
 gpt4free
 curl-cffi
+g4f
