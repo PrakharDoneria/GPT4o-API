@@ -11,17 +11,29 @@ def hello_world():
 def gpt4o():
     return get_ai_response("gpt-4o")
 
-@app.route('/geminipro', methods=['GET'])
-def geminipro():
-    return get_ai_response("geminipro")
+@app.route('/advance', methods=['POST'])
+def advance():
+    try:
+        data = request.get_json()
+        if not data or "messages" not in data:
+            return jsonify({"error": "Invalid input, 'messages' field is required"}), 400
 
-@app.route('/llama', methods=['GET'])
-def llama():
-    return get_ai_response("llama")
+        client = Client()
+        response = client.chat.completions.create(
+            model="gpt-4o",
+            messages=data["messages"],
+        )
 
-@app.route('/metaai', methods=['GET'])
-def metaai():
-    return get_ai_response("metaai")
+        if response.choices:
+            return jsonify({"response": response.choices[0].message.content})
+        else:
+            return jsonify({"error": "Failed to get response from the model"}), 500
+    except KeyError as e:
+        return jsonify({"error": f"KeyError: {str(e)}"}), 500
+    except ValueError as e:
+        return jsonify({"error": f"ValueError: {str(e)}"}), 500
+    except Exception as e:
+        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
 
 def get_ai_response(model_name):
     try:
