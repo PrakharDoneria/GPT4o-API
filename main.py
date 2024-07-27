@@ -26,7 +26,7 @@ def advance():
         )
 
         if response.choices:
-            return jsonify({"response": response.choices[0].message.content})
+            return jsonify({"reply": response.choices[0].message.content})
         else:
             return jsonify({"error": "Failed to get response from the model"}), 500
     except KeyError as e:
@@ -51,7 +51,7 @@ def gpt4():
         if response.status_code == 200:
             response_data = response.json()
             if response_data.get("ok"):
-                return jsonify({"response": response_data.get("response")})
+                return jsonify({"reply": response_data.get("response")})
             else:
                 return jsonify({"error": "Failed to get response from external API"}), 500
         else:
@@ -76,7 +76,7 @@ def get_ai_response(model_name):
         )
 
         if response.choices:
-            return jsonify({"response": response.choices[0].message.content})
+            return jsonify({"reply": response.choices[0].message.content})
         else:
             return jsonify({"error": f"Failed to get response from {model_name}"}), 500
     except KeyError as e:
