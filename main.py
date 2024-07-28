@@ -63,6 +63,31 @@ def gpt4():
     except Exception as e:
         return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
 
+@app.route('/generate', methods=['GET'])
+def generate():
+    try:
+        prompt = request.args.get('prompt')
+        if not prompt:
+            return jsonify({"error": "No prompt provided"}), 400
+
+        client = Client()
+        response = client.images.generate(
+            model="gemini",
+            prompt=prompt,
+        )
+
+        if response.data:
+            image_url = response.data[0].url
+            return jsonify({"image_url": image_url})
+        else:
+            return jsonify({"error": "Failed to generate image"}), 500
+    except KeyError as e:
+        return jsonify({"error": f"KeyError: {str(e)}"}), 500
+    except ValueError as e:
+        return jsonify({"error": f"ValueError: {str(e)}"}), 500
+    except Exception as e:
+        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
+
 def get_ai_response(model_name):
     try:
         prompt = request.args.get('prompt')
