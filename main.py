@@ -1,8 +1,11 @@
 from flask import Flask, request, jsonify
-from g4f.client import Client
+import google.generativeai as genai
+import os
 import requests
 
 app = Flask(__name__)
+
+genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
 
 @app.route('/')
 def hello_world():
@@ -38,7 +41,24 @@ def advance():
 
 @app.route('/geminiAdvance', methods=['GET'])
 def gemini_advance():
-    return get_ai_response("gemini-pro")
+    try:
+        prompt = request.args.get('prompt')
+        if not prompt:
+            return jsonify({"error": "No prompt provided"}), 400
+
+        model = genai.GenerativeModel('gemini-1.0-pro-latest')
+        response = model.generate_content(prompt)
+
+        if response.text:
+            return jsonify({"reply": response.text})
+        else:
+            return jsonify({"error": "Failed to get response from the model"}), 500
+    except KeyError as e:
+        return jsonify({"error": f"KeyError: {str(e)}"}), 500
+    except ValueError as e:
+        return jsonify({"error": f"ValueError: {str(e)}"}), 500
+    except Exception as e:
+        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
 
 @app.route('/gpt4', methods=['GET'])
 def gpt4():

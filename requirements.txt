@@ -3,3 +3,4 @@ gpt4free
 curl-cffi
 g4f
 requests
+google-generativeai
