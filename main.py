@@ -115,6 +115,7 @@ def get_ai_response(model_name):
             return jsonify({"error": "No prompt provided"}), 400
 
         client = Client()
+        
         response = client.chat.completions.create(
             model=model_name,
             messages=[{"role": "user", "content": prompt}],
