@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from g4f.client import Client 
 import google.generativeai as genai
 import os
 import requests
@@ -115,14 +116,13 @@ def get_ai_response(model_name):
             return jsonify({"error": "No prompt provided"}), 400
 
         client = Client()
-        
         response = client.chat.completions.create(
             model=model_name,
             messages=[{"role": "user", "content": prompt}],
         )
 
-        if response.choices:
-            return jsonify({"reply": response.choices[0].message.content})
+        if response['choices']: 
+            return jsonify({"reply": response['choices'][0]['message']['content']})
         else:
             return jsonify({"error": f"Failed to get response from {model_name}"}), 500
     except KeyError as e:
