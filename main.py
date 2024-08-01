@@ -10,7 +10,7 @@ genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
 
 @app.route('/')
 def hello_world():
-    return '<h1>v1.2.1</h1>'
+    return '<h1>v1.2.1.1</h1>'
 
 @app.route('/gpt4o', methods=['GET'])
 def gpt4o():
