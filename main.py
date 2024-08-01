@@ -10,7 +10,7 @@ genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
 
 @app.route('/')
 def hello_world():
-    return '<h1>v1.2</h1>'
+    return '<h1>v1.2.1</h1>'
 
 @app.route('/gpt4o', methods=['GET'])
 def gpt4o():
@@ -40,8 +40,11 @@ def advance():
     except Exception as e:
         return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
 
+response = None
+
 @app.route('/geminiAdvance', methods=['GET'])
 def gemini_advance():
+    global response
     try:
         prompt = request.args.get('prompt')
         if not prompt:
@@ -50,9 +53,16 @@ def gemini_advance():
         model = genai.GenerativeModel('gemini-1.0-pro-latest')
         response = model.generate_content(prompt)
 
-        return jsonify({"reply": response})
-    except Exception:
-        return jsonify({"reply": "An unexpected error occurred"}), 500
+        if response.text:
+            return jsonify({"reply": response.text})
+        else:
+            return jsonify({"reply": "Failed to get response from the model"}), 500
+    except KeyError as e:
+        return jsonify({"reply": response}), 500
+    except ValueError as e:
+        return jsonify({"reply": response}), 500
+    except Exception as e:
+        return jsonify({"reply": response}), 500
 
 
 @app.route('/gpt4', methods=['GET'])
