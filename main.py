@@ -10,7 +10,7 @@ genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
 
 @app.route('/')
 def hello_world():
-    return '<h1>Hello World</h1>'
+    return '<h1>v1.2</h1>'
 
 @app.route('/gpt4o', methods=['GET'])
 def gpt4o():
@@ -45,28 +45,22 @@ def gemini_advance():
     try:
         prompt = request.args.get('prompt')
         if not prompt:
-            return jsonify({"error": "No prompt provided"}), 400
+            return jsonify({"reply": "No prompt provided"}), 400
 
         model = genai.GenerativeModel('gemini-1.0-pro-latest')
         response = model.generate_content(prompt)
 
-        if response.text:
-            return jsonify({"reply": response.text})
-        else:
-            return jsonify({"error": "Failed to get response from the model"}), 500
-    except KeyError as e:
-        return jsonify({"error": f"KeyError: {str(e)}"}), 500
-    except ValueError as e:
-        return jsonify({"error": f"ValueError: {str(e)}"}), 500
-    except Exception as e:
-        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
+        return jsonify({"reply": response})
+    except Exception:
+        return jsonify({"reply": "An unexpected error occurred"}), 500
+
 
 @app.route('/gpt4', methods=['GET'])
 def gpt4():
     try:
         prompt = request.args.get('prompt')
         if not prompt:
-            return jsonify({"error": "No prompt provided"}), 400
+            return jsonify({"reply": "No prompt provided"}), 400
 
         response = requests.get(f"https://alexapi.69dev.id/v1/gpt4-32k.php?text={prompt}")
         if response.status_code == 200:
@@ -74,15 +68,12 @@ def gpt4():
             if response_data.get("ok"):
                 return jsonify({"reply": response_data.get("response")})
             else:
-                return jsonify({"error": "Failed to get response from external API"}), 500
+                return jsonify({"reply": "Failed to get response from external API"}), 500
         else:
-            return jsonify({"error": f"External API request failed with status code {response.status_code}"}), 500
-    except KeyError as e:
-        return jsonify({"error": f"KeyError: {str(e)}"}), 500
-    except ValueError as e:
-        return jsonify({"error": f"ValueError: {str(e)}"}), 500
-    except Exception as e:
-        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
+            return jsonify({"reply": f"External API request failed with status code {response.status_code}"}), 500
+    except Exception:
+        return jsonify({"reply": "An unexpected error occurred"}), 500
+
 
 @app.route('/generate', methods=['GET'])
 def generate():
