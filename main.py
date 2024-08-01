@@ -64,26 +64,28 @@ def gemini_advance():
     except Exception as e:
         return jsonify({"reply": response}), 500
 
+gpt4_response = None
 
 @app.route('/gpt4', methods=['GET'])
 def gpt4():
+    global gpt4_response
     try:
         prompt = request.args.get('prompt')
         if not prompt:
             return jsonify({"reply": "No prompt provided"}), 400
 
-        response = requests.get(f"https://alexapi.69dev.id/v1/gpt4-32k.php?text={prompt}")
-        if response.status_code == 200:
-            response_data = response.json()
+        gpt4_response = requests.get(f"https://alexapi.69dev.id/v1/gpt4-32k.php?text={prompt}")
+        if gpt4_response.status_code == 200:
+            response_data = gpt4_response.json()
             if response_data.get("ok"):
                 return jsonify({"reply": response_data.get("response")})
             else:
                 return jsonify({"reply": "Failed to get response from external API"}), 500
         else:
-            return jsonify({"reply": f"External API request failed with status code {response.status_code}"}), 500
+            return jsonify({"reply": f"External API request failed with status code {gpt4_response.status_code}"}), 500
     except Exception:
-        return jsonify({"reply": "An unexpected error occurred"}), 500
-
+        return jsonify({"reply": gpt4_response}), 500
+        
 
 @app.route('/generate', methods=['GET'])
 def generate():
